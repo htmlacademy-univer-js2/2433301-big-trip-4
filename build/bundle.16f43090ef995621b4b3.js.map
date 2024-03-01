@@ -1,0 +1,1 @@
+{"version":3,"file":"bundle.16f43090ef995621b4b3.js","mappings":"AAAAA,QAAQC,IAAI","sources":["webpack://big-trip/./src/main.js"],"sourcesContent":["console.log('Hello')\n"],"names":["console","log"],"sourceRoot":""}
