@@ -9,7 +9,7 @@ export default class BoardPresenter {
   eventsListComponent = new EventsListView();
 
   constructor(boardContainer) {
-    this.container = container;
+    this.container = boardContainer;
   }
 
   init() {

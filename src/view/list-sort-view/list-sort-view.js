@@ -10,6 +10,8 @@ export default class ListSortView {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
+
+    return this.element;
   }
 
   removeElement() {

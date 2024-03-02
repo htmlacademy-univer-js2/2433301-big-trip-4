@@ -1,9 +1,9 @@
 import { createElement } from "../../render";
-import createEditPointTemplate from "./create-edit-point-template";
+import createTripInfoTemplate from "./create-trip-info-template";
 
-export default class EditPointView {
+export default class TripInfoView{
   getTemplate() {
-    return createEditPointTemplate();
+    return createTripInfoTemplate();
   }
 
   getElement() {
