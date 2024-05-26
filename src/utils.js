@@ -1,65 +1,46 @@
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
+import dayjs from 'dayjs';
 
-dayjs.extend(duration)
+const HOUR_MINUTES_COUNT = 60;
+const TOTAL_DAY_MINUTES_COUNT = 1440;
+const DAY_HOUR = 12;
+const DAYS_MONTH = 31;
+const DATE_FORMAT = 'YYYY-MM-DD';
+const DATE_TIME_FORMAT = 'DD/MM/YY hh:mm';
+const TIME_FORMAT = 'hh:mm';
+let date = dayjs().subtract(getRandomValue(0, DAYS_MONTH), 'day').toDate();
 
-const MSEC_IN_SEC = 1000
-const SEC_IN_MIN = 60
-const MIN_IN_HOUR = 60
-const HOUR_IN_DAY = 24
-
-const MSEC_IN_HOUR = MSEC_IN_SEC * SEC_IN_MIN * MIN_IN_HOUR
-const MSEC_IN_DAY = MSEC_IN_HOUR * HOUR_IN_DAY
-
-function getRandomInteger(a = 0, b = 1) {
-  const lower = Math.min(a, b)
-  const upper = Math.floor(Math.max(a, b))
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1))
+function getRandomValue (minimum = 1, maximum = 1000) { //нужно всплытие
+  return Math.floor(Math.random() * (maximum - minimum) + minimum);
 }
 
-function getRandomValueFromArray(items) {
-  return items[getRandomInteger(0, items.length - 1)]
-}
+const getDate = ({flag}) => {
+  const minsGap = getRandomValue(0, HOUR_MINUTES_COUNT - 1);
+  const hoursGap = getRandomValue(0, DAY_HOUR - 1);
+  if (flag) {
+    date = dayjs(date).add(minsGap, 'minute').add(hoursGap, 'hour').toDate();
+  }
+  return date;
+};
 
-function formatStringToDateTime(date) {
-  return dayjs(date).format("YYYY-MM-DDTHH:mm")
-}
+const getDuration = (dateFrom, dateTo) => {
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom), 'm');
+  if (Math.ceil(diff / TOTAL_DAY_MINUTES_COUNT) > 1){
+    return `${Math.ceil(diff / TOTAL_DAY_MINUTES_COUNT)} D`;
+  }
+  if (Math.ceil(diff / HOUR_MINUTES_COUNT) > 1){
+    return `${Math.ceil(diff / HOUR_MINUTES_COUNT)} H`;
+  }
+  return `${Math.ceil(diff)} M`;
+};
 
-function formatStringToShortDate(date) {
-  return dayjs(date).format("MMM DD")
-}
+const getTime = (dt) => dayjs(dt).format(TIME_FORMAT);
 
-function formatStringToTime(date) {
-  return dayjs(date).format("HH:mm")
-}
+const getOnlyDate = (dt) => dayjs(dt).format(DATE_FORMAT);
 
-function capitalize(string) {
-  return `${string[0].toUpperCase()}${string.slice(1)}`
-}
+const getMonthAndDate = (dt) => dayjs(dt).format('MMM DD');
 
-function getPointDuration(dateFrom, dateTo) {
-  const timeDiffInMSEC = dayjs(dateTo).diff(dayjs(dateFrom))
-  const duration = dayjs.duration(timeDiffInMSEC)
-  const dateFormat = timeDiffInMSEC >= MSEC_IN_DAY ? "DD[D] HH[H]  mm[M]"
-    : timeDiffInMSEC >= MSEC_IN_HOUR ? "HH[H] mm[M]"
-    : "mm[M]"
-  const pointDuration = duration.format(dateFormat)
+const getFullDate = (dt) => dayjs(dt).format(DATE_TIME_FORMAT);
 
-  return pointDuration
-}
+const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
-function getScheduleDate(date) {
-  return dayjs(date).format("DD/MM/YY HH:mm")
-}
-
-export {
-  getRandomInteger,
-  getRandomValueFromArray,
-  formatStringToDateTime,
-  formatStringToShortDate,
-  getPointDuration,
-  capitalize,
-  getScheduleDate,
-  formatStringToTime
-}
+export {getRandomArrayElement, getRandomValue, getDate, getDuration, getTime, getOnlyDate, getMonthAndDate, getFullDate};
