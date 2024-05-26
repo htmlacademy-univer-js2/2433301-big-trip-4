@@ -1,18 +1,17 @@
-import { POINT_EMPTY } from "../../const";
 import { createElement } from "../../render";
-import createEditPointTemplate from "./create-edit-point-template";
+import createPointTemplate from "./create-point-template";
 
-export default class EditPointView {
-  constructor({point = POINT_EMPTY, pointDestinations, pointOffers}) {
+export default class PointView {
+  constructor({point, pointDestination, pointOffers}) {
     this.point = point;
-    this.pointDestinations = pointDestinations;
+    this.pointDestination = pointDestination;
     this.pointOffers = pointOffers;
   }
 
   getTemplate() {
-    return createEditPointTemplate({
+    return createPointTemplate({
       point: this.point,
-      pointDestinations: this.pointDestinations,
+      pointDestination: this.pointDestination,
       pointOffers: this.pointOffers
     });
   }
