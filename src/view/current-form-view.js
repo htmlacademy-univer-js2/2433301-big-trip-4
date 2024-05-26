@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {POINT_TYPES, DESTINATIONS, OFFERS, IMAGES} from '../mock/offer-point-town.js';
-import { getRandomValue, getFullDate } from '../utils.js';
+import {POINT_TYPES, DESTINATIONS} from '../mock/offer-point-town.js';
+import { getDateTime } from '../utils.js';
 
 const isChecked = (offers, title) => {
   let check = false;
@@ -47,10 +47,10 @@ const createCurrentFormTemplate = (point) =>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getFullDate(point.dateFrom)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(point.dateFrom)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getFullDate(point.dateTo)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(point.dateTo)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -61,19 +61,21 @@ const createCurrentFormTemplate = (point) =>
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
         </div>
 
-      <button class="event__reset-btn" type="reset">Cancel</button>'
+      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__rollup-btn" type="button">
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-          ${OFFERS.map((offer) => `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.toLowerCase()}-1" type="checkbox" name="event-offer-${offer.toLowerCase()}" ${isChecked(point.offers, offer)}>
-          <label class="event__offer-label" for="event-offer-${offer.toLowerCase()}-1">
-            <span class="event__offer-title">${offer}</span>
+          ${point.offers.map((offer) => `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.toLowerCase()}-1" type="checkbox" name="event-offer-${offer.title.toLowerCase()}" ${isChecked(point.offers, offer)}>
+          <label class="event__offer-label" for="event-offer-${offer.title.toLowerCase()}-1">
+            <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
-            <span class="event__offer-price">${getRandomValue()}</span>
+            <span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`).join('')};
 
@@ -83,7 +85,7 @@ const createCurrentFormTemplate = (point) =>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-            ${IMAGES.map((img) => `<img class="event__photo" src="${img}.jpg" alt="Event photo">`).join('')};
+            ${point.destination.photos.map((img) => `<img class="event__photo" src="${img}.jpg" alt="Event photo">`).join('')};
             </div>
           </div>
         </section>
@@ -94,21 +96,33 @@ const createCurrentFormTemplate = (point) =>
 
 export default class CurrentFormView extends AbstractView{
   #point = null;
-  #handleSubmit = null;
 
-  constructor ({data, onSubmit}) {
+  constructor (data) {
     super();
     this.#point = data;
-    this.#handleSubmit = onSubmit;
-    this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
   }
 
   get template() {
     return createCurrentFormTemplate(this.#point);
   }
 
-  #submitHandler = (evt) => {
+  setPreviewClickHandler = (callback) => {
+    this._callback.previewClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#previewClickHandler);
+  };
+
+  #previewClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleSubmit();
+    this._callback.previewClick();
+  };
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('click', this.#formSubmitHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this.#point);
   };
 }

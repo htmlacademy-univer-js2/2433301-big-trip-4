@@ -8,7 +8,7 @@ export default class PointModel {
   #townModel = new TownModel();
   #towns = this.#townModel.getTowns();
 
-  points = Array.from({length: POINTS_COUNT}, () => {
+  #points = Array.from({length: POINTS_COUNT}, () => {
     const offerModel = new OfferModel(getRandomValue(0, OFFERS.length));
     const offers = offerModel.getOffers();
     const town = getRandomArrayElement(this.#towns);
@@ -16,12 +16,8 @@ export default class PointModel {
     return point;
   });
 
-  getPoints() {
-    return this.points;
-  }
-
-  getPoint() {
-    return this.points[0];
+  get points() {
+    return this.#points;
   }
 }
 

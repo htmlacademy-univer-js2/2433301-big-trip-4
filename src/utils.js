@@ -10,18 +10,16 @@ const DATE_TIME_FORMAT = 'DD/MM/YY hh:mm';
 const TIME_FORMAT = 'hh:mm';
 let date = dayjs().subtract(getRandomValue(0, DAYS_MONTH), 'day').toDate();
 
-const Filter = {
-  [FilterType.EVERYTHING] : () => true,
-  [FilterType.FUTURE] : (point) => dayjs().isBefore(dayjs(point.dateFrom)),
-  [FilterType.PAST] : (point) => dayjs().isAfter(dayjs(point.dateTo)),
-  [FilterType.PRESENT] : (point) => dayjs().isAfter(dayjs(point.dateFrom)) && dayjs().isBefore(dayjs(point.dateTo))
-};
-
+//Random
 function getRandomValue (minimum = 1, maximum = 1000) { //нужно всплытие
   return Math.floor(Math.random() * (maximum - minimum) + minimum);
 }
 
-const getDate = ({flag}) => {
+const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
+
+
+//Date
+const getTempDate = ({flag}) => {
   const minsGap = getRandomValue(0, HOUR_MINUTES_COUNT - 1);
   const hoursGap = getRandomValue(0, DAY_HOUR - 1);
   if (flag) {
@@ -30,25 +28,46 @@ const getDate = ({flag}) => {
   return date;
 };
 
+const getDaysOutput = (days) => days <= 0 ? '' : `${`${days}`.padStart(2, '0')}D`;
+
+const getHoursOutput = (days, restHours) => (days <= 0 && restHours <= 0) ? '' : `${`${restHours}`.padStart(2, '0')}H`;
+
+const getMinutesOutput = (restMinutes) => `${`${restMinutes}`.padStart(2, '0')}M`;
+
 const getDuration = (dateFrom, dateTo) => {
-  const diff = dayjs(dateTo).diff(dayjs(dateFrom), 'm');
-  if (Math.ceil(diff / TOTAL_DAY_MINUTES_COUNT) > 1){
-    return `${Math.ceil(diff / TOTAL_DAY_MINUTES_COUNT)} D`;
-  }
-  if (Math.ceil(diff / HOUR_MINUTES_COUNT) > 1){
-    return `${Math.ceil(diff / HOUR_MINUTES_COUNT)} H`;
-  }
-  return `${Math.ceil(diff)} M`;
+  const start = dayjs(dateFrom);
+  const end = dayjs(dateTo);
+  const difference = end.diff(start, 'minute');
+
+  const days = Math.trunc(difference / TOTAL_DAY_MINUTES_COUNT);
+  const restHours = Math.trunc((difference - days * TOTAL_DAY_MINUTES_COUNT) / HOUR_MINUTES_COUNT);
+  const restMinutes = difference - (days * TOTAL_DAY_MINUTES_COUNT + restHours * HOUR_MINUTES_COUNT);
+
+  const daysOutput = getDaysOutput(days);
+  const hoursOutput = getHoursOutput(days, restHours);
+  const minutesOutput = getMinutesOutput(restMinutes);
+
+  return `${daysOutput} ${hoursOutput} ${minutesOutput}`;
 };
 
 const getTime = (dt) => dayjs(dt).format(TIME_FORMAT);
+const getDate = (dt) => dayjs(dt).format(DATE_FORMAT);
+const getDateTime = (dt) => dayjs(dt).format(DATE_TIME_FORMAT);
+const humanizePointDueDate = (dt) => dayjs(dt).format('DD MMM');
 
-const getOnlyDate = (dt) => dayjs(dt).format(DATE_FORMAT);
 
-const getMonthAndDate = (dt) => dayjs(dt).format('MMM DD');
+//Filter
 
-const getFullDate = (dt) => dayjs(dt).format(DATE_TIME_FORMAT);
+const Filter = {
+  [FilterType.EVERYTHING] : (points) => points,
+  [FilterType.FUTURE] : (points) => dayjs().isBefore(dayjs(points.dateFrom)),
+  [FilterType.PAST] : (points) => dayjs().isAfter(dayjs(points.dateTo)),
+  [FilterType.PRESENT] : (points) => dayjs().isAfter(dayjs(points.dateFrom)) && dayjs().isBefore(dayjs(points.dateTo))
+};
 
-const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
+//Other
+const isEscapeButton = (evt) => evt.key === 'Escape';
 
-export {getRandomArrayElement, getRandomValue, getDate, getDuration, getTime, getOnlyDate, getMonthAndDate, getFullDate, Filter};
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
+export {getRandomArrayElement, getRandomValue, getTempDate, getDuration, getTime, getDate, humanizePointDueDate, getDateTime, Filter, isEscapeButton, updateItem};
