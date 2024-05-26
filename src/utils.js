@@ -57,7 +57,6 @@ const humanizePointDueDate = (dt) => dayjs(dt).format('DD MMM');
 
 
 //Filter
-
 const Filter = {
   [FilterType.EVERYTHING] : (points) => points,
   [FilterType.FUTURE] : (points) => dayjs().isBefore(dayjs(points.dateFrom)),
@@ -65,9 +64,23 @@ const Filter = {
   [FilterType.PRESENT] : (points) => dayjs().isAfter(dayjs(points.dateFrom)) && dayjs().isBefore(dayjs(points.dateTo))
 };
 
+
+//Sorting
+const sortPricePoint = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
+
+const sortDayPoint = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+
+const sortTimePoint = (pointA, pointB) => {
+  const timePointA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const timePointB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return timePointB - timePointA;
+};
+
+
 //Other
 const isEscapeButton = (evt) => evt.key === 'Escape';
 
 const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
-export {getRandomArrayElement, getRandomValue, getTempDate, getDuration, getTime, getDate, humanizePointDueDate, getDateTime, Filter, isEscapeButton, updateItem};
+export {getRandomArrayElement, getRandomValue, getTempDate, getDuration, getTime, getDate, humanizePointDueDate, getDateTime, Filter, isEscapeButton, updateItem,
+  sortDayPoint, sortPricePoint, sortTimePoint};
