@@ -6,11 +6,20 @@ import OpenButtonView from '../view/open-button-view.js';
 import { RenderPosition, render, replace } from '../framework/render.js';
 import CloseButtonView from '../view/close-button-view.js';
 import SaveButtonView from '../view/save-btn-view.js';
+import EmptyListView from '../view/empty-list-view.js';
+import FilterFormView from '../view/filter-form-view.js';
+import FilterView from '../view/filters-view.js';
+import TripInfoView from '../view/trip-info-view.js';
+import { generateFilter } from '../mock/filters.js';
+
 
 export default class Presenter {
 
   #sortFormView = new SortingView();
   #tripListView = new TripListView();
+  #emptyListView = new EmptyListView();
+  #tripInfoView = new TripInfoView();
+  #filterFormView = new FilterFormView();
   #container = null;
   #pointModel = null;
   #points = [];
@@ -22,9 +31,20 @@ export default class Presenter {
 
   init() {
     this.#points = [...this.#pointModel.getPoints()];
-    render(this.#sortFormView, this.#container);
-    render(this.#tripListView, this.#container);
-    this.#points.forEach((point) => this.#renderPoint(point));
+    const pageMainElement = document.querySelector('.trip-main');
+    const filterElement = document.querySelector('.trip-controls__filters');
+    const filters = generateFilter(this.#points);
+    render(this.#filterFormView, filterElement);
+    filters.forEach((filter) => render(new FilterView(filter), this.#filterFormView.element));
+    if (this.#points.length) {
+      render(this.#sortFormView, this.#container);
+      render(this.#tripInfoView, pageMainElement, RenderPosition.AFTERBEGIN);
+      render(this.#tripListView, this.#container);
+      this.#points.forEach((point) => this.#renderPoint(point));
+    }
+    else {
+      render(this.#emptyListView, this.#container);
+    }
   }
 
   #renderPoint (point) {

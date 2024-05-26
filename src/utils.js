@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { FilterType } from './const.js';
 
 const HOUR_MINUTES_COUNT = 60;
 const TOTAL_DAY_MINUTES_COUNT = 1440;
@@ -8,6 +9,13 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const DATE_TIME_FORMAT = 'DD/MM/YY hh:mm';
 const TIME_FORMAT = 'hh:mm';
 let date = dayjs().subtract(getRandomValue(0, DAYS_MONTH), 'day').toDate();
+
+const Filter = {
+  [FilterType.EVERYTHING] : () => true,
+  [FilterType.FUTURE] : (point) => dayjs().isBefore(dayjs(point.dateFrom)),
+  [FilterType.PAST] : (point) => dayjs().isAfter(dayjs(point.dateTo)),
+  [FilterType.PRESENT] : (point) => dayjs().isAfter(dayjs(point.dateFrom)) && dayjs().isBefore(dayjs(point.dateTo))
+};
 
 function getRandomValue (minimum = 1, maximum = 1000) { //нужно всплытие
   return Math.floor(Math.random() * (maximum - minimum) + minimum);
@@ -43,4 +51,4 @@ const getFullDate = (dt) => dayjs(dt).format(DATE_TIME_FORMAT);
 
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
-export {getRandomArrayElement, getRandomValue, getDate, getDuration, getTime, getOnlyDate, getMonthAndDate, getFullDate};
+export {getRandomArrayElement, getRandomValue, getDate, getDuration, getTime, getOnlyDate, getMonthAndDate, getFullDate, Filter};
