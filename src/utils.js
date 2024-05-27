@@ -78,9 +78,15 @@ const sortTimePoint = (pointA, pointB) => {
 
 
 //Other
-const isEscapeButton = (evt) => evt.key === 'Escape';
+const isEscapeButton = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
+const capitalizeString = (string) => {
+  const capFirstString = string[0].toUpperCase();
+  const restOfString = string.slice(1);
+  return capFirstString + restOfString;
+};
+
 export {getRandomArrayElement, getRandomValue, getTempDate, getDuration, getTime, getDate, humanizePointDueDate, getDateTime, Filter, isEscapeButton, updateItem,
-  sortDayPoint, sortPricePoint, sortTimePoint};
+  sortDayPoint, sortPricePoint, sortTimePoint, capitalizeString};
