@@ -36,6 +36,13 @@ const UpdateType = {
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
-export {FilterType, Mode, POINT_TYPES, UpdateType, UserAction, SortType, Method};
+const TimeLimit = {
+  MIN_LIMIT: 350,
+  MAX_LIMIT: 1000,
+};
+
+export {FilterType, Mode, POINT_TYPES, UpdateType, UserAction, SortType, Method, TimeLimit};

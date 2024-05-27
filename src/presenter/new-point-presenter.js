@@ -9,13 +9,15 @@ export default class NewPointPresenter {
   #addFormComponent = null;
   #offersByType = null;
   #destinations = null;
+  #destinationsNames = null;
   #changeData = null;
   #destroyCallback = null;
 
-  constructor(pointsListContainer, offersByType, destinations, changeData) {
+  constructor(pointsListContainer, offersByType, destinations, destinationsNames, changeData) {
     this.#pointsListContainer = pointsListContainer;
     this.#offersByType = offersByType;
     this.#destinations = destinations;
+    this.#destinationsNames = destinationsNames;
     this.#changeData = changeData;
   }
 
@@ -34,11 +36,30 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escapeKeyDownHandler);
   }
 
+  setSaving() {
+    this.#addFormComponent.updateElement({
+      isSaving: true,
+      isDisabled: true,
+    });
+  }
+
+  setAborting() {
+    const resetAddFormState = () => {
+      this.#addFormComponent.updateElement({
+        isSaving: false,
+        isDeleting: false,
+        isDisabled: false,
+      });
+    };
+    this.#addFormComponent.shake(resetAddFormState);
+  }
+
   #renderAddFormComponent() {
     if(this.#addFormComponent !== null) {
       return;
     }
-    this.#addFormComponent = new PointFormEditView(this.#offersByType, this.#destinations, this.#generateDefaultTripEvent(), true);
+    this.#addFormComponent = new PointFormEditView(this.#offersByType, this.#destinations,
+      this.#destinationsNames, this.#generateDefaultTripEvent(), true);
     this.#addFormComponent.setFormSubmitHandler(this.#formSubmitHandler);
     this.#addFormComponent.setFormDeleteHandler(this.#cancelButtonClickHandler);
     render(this.#addFormComponent, this.#pointsListContainer, RenderPosition.AFTERBEGIN);

@@ -12,13 +12,15 @@ export default class PointPresenter {
   #editFormComponent = null;
   #offersByType = null;
   #destinations = null;
+  #detinationNames = null;
   #changeData = null;
   #changePointMode = null;
 
-  constructor(pointsListContainer, offersByType, destinations, changeData, changePointMode) {
+  constructor(pointsListContainer, offersByType, destinations, destinationNames, changeData, changePointMode) {
     this.#pointsListContainer = pointsListContainer;
     this.#offersByType = offersByType;
     this.#destinations = destinations;
+    this.#detinationNames = destinationNames;
     this.#changeData = changeData;
     this.#changePointMode = changePointMode;
   }
@@ -37,6 +39,39 @@ export default class PointPresenter {
   destroy() {
     remove(this.#pointsComponent);
     remove(this.#editFormComponent);
+  }
+
+  setSaving() {
+    if(this.#pointMode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isSaving: true,
+        isDisabled: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if(this.#pointMode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDeleting: true,
+        isDisabled: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if(this.#pointMode === Mode.EDITING) {
+      this.#editFormComponent.shake();
+      return;
+    }
+    const resetEditFormState = () => {
+      this.#editFormComponent.updateElement({
+        isSaving: false,
+        isDeleting: false,
+        isDisabled: false,
+      });
+    };
+    this.#editFormComponent.shake(resetEditFormState);
   }
 
   #renderPointComponent() {
@@ -66,7 +101,7 @@ export default class PointPresenter {
   }
 
   #renderEditFormComponent() {
-    this.#editFormComponent = new PointFormEditView(this.#offersByType, this.#destinations, this.#point);
+    this.#editFormComponent = new PointFormEditView(this.#offersByType, this.#destinations, this.#detinationNames, this.#point);
     this.#editFormComponent.setFormSubmitHandler(this.#formSubmitHandler);
     this.#editFormComponent.setFormCloseClickHandler(this.#formCloseButtonClickHandler);
     this.#editFormComponent.setFormDeleteHandler(this.#deleteButtonClickHandler);
