@@ -7,38 +7,29 @@ const FilterType = {
   PAST: 'past'
 };
 
-const SORTING_COLUMNS = [
-  {
-    type: 'day',
-    label: 'Day',
-    active: true,
-    defaultSelected: true,
-  },
-  {
-    type: 'event',
-    label: 'Event',
-    active: false,
-  },
-  {
-    type: 'time',
-    label: 'Time',
-    active: true,
-  },
-  {
-    type: 'price',
-    label: 'Price',
-    active: true,
-  },
-  {
-    type: 'offer',
-    label: 'Offer',
-    active: false,
-  },
-];
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer',
+};
 
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
 };
 
-export {FilterType, SORTING_COLUMNS, Mode, POINT_TYPES};
+const UserAction = {
+  ADD_TRIP_EVENT: 'ADD_TRIP_EVENT',
+  UPDATE_TRIP_EVENT: 'UPDATE_TRIP_EVENT',
+  DELETE_TRIP_EVENT: 'DELETE_TRIP_EVENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {FilterType, Mode, POINT_TYPES, UpdateType, UserAction, SortType};
