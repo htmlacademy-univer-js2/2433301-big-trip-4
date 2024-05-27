@@ -1,42 +1,44 @@
 import FormEditView from '../view/form-edit-view.js';
 import TripPointView from '../view/trip-point-view.js';
 import { render, replace, remove, } from '../framework/render.js';
-import { Mode } from '../const.js';
-import { isEscapeButton } from '../utils.js';
-
+import { Mode, UpdateType, UserAction } from '../const.js';
+import { isEscapeButton, areDatesSame } from '../utils.js';
 
 export default class PointPresenter {
   #changeData = null;
   #changeMode = null;
   #container = null;
-  #pointsModel = null;
+  #offersByType = null;
   #destinations = null;
   #offers = null;
   #point = null;
   #previewPointComponent = null;
   #editingPointComponent = null;
   #mode = Mode.DEFAULT;
+  #tripEventComponent = null;
+  #editFormComponent = null;
 
-  constructor (container, pointsModel, onDataChange, onModeChange) {
+  constructor (container, offersByType, onDataChange, onModeChange) {
     this.#container = container;
-    this.#pointsModel = pointsModel;
+    this.#offersByType = offersByType;
     this.#changeData = onDataChange;
     this.#changeMode = onModeChange;
+    this.#mode = Mode.DEFAULT;
   }
 
   init(point) {
     this.#point = point;
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
-    const prevPreviewPointComponent = this.#previewPointComponent;
-    const prevEditingPointComponent = this.#editingPointComponent;
+    this.#renderTripEventComponent();
+  }
 
-    this.#previewPointComponent = new TripPointView(this.#point, this.#destinations, this.#offers);
-    this.#editingPointComponent = new FormEditView(this.#point, this.#destinations, this.#offers);
-    this.#previewPointComponent.setEditClickHandler(this.#handleEditClick);
-    this.#previewPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#editingPointComponent.setPreviewClickHandler(this.#handlePreviewClick);
-    this.#editingPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
+  #renderTripEventComponent() {
+    const prevPreviewPointComponent = this.#tripEventComponent;
+    const prevEditingPointComponent = this.#editFormComponent;
+
+    this.#previewPointComponent = new TripPointView(this.#point, this.#offersByType);
+    this.#renderEditFormComponent();
+    this.#tripEventComponent.setFormOpenClickHandler(this.#onFormOpenButtonClick);
+    this.#tripEventComponent.setFavoriteButtonHandler(this.#onFavoriteChangeClick);
 
     if (prevPreviewPointComponent === null || prevEditingPointComponent === null) {
       render(this.#previewPointComponent, this.#container);
@@ -62,8 +64,7 @@ export default class PointPresenter {
   };
 
   resetView = () => {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#editingPointComponent.reset(this.#point);
+    if (this.#mode === Mode.EDITING) {
       this.#replaceEditingPointToPreviewPoint();
     }
   };
@@ -76,6 +77,14 @@ export default class PointPresenter {
     }
   };
 
+  #renderEditFormComponent() {
+    this.#editFormComponent = new FormEditView(this.#offersByType, this.#point);
+
+    this.#editFormComponent.setFormSubmitHandler(this.#onFormSubmit);
+    this.#editFormComponent.setFormCloseClickHandler(this.#onFormCloseButtonClick);
+    this.#editFormComponent.setFormDeleteHandler(this.#onDeleteButtonClick);
+  }
+
   #replacePreviewPointToEditingPoint = () => {
     replace(this.#editingPointComponent, this.#previewPointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -84,26 +93,33 @@ export default class PointPresenter {
   };
 
   #replaceEditingPointToPreviewPoint = () => {
+    this.#editFormComponent.reset(this.#point);
     replace(this.#previewPointComponent, this.#editingPointComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
   };
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point);
-    this.#replaceEditingPointToPreviewPoint();
-  };
-
-  #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
-  };
-
-  #handleEditClick = () => {
+  #onFormOpenButtonClick = () => {
     this.#replacePreviewPointToEditingPoint();
   };
 
-  #handlePreviewClick = () => {
-    this.#editingPointComponent.reset(this.#point);
+  #onFormCloseButtonClick = () => {
     this.#replaceEditingPointToPreviewPoint();
+  };
+
+  #onFormSubmit = (point) => {
+    const isMinorUpdate = !areDatesSame(this.#point.dateFrom, point.dateFrom)
+      || !areDatesSame(this.#point.dateTo, point.dateTo)
+      || this.#point.basePrice !== point.basePrice;
+    this.#changeData(UserAction.UPDATE_TRIP_EVENT, isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH, point);
+    this.#renderEditFormComponent();
+  };
+
+  #onFavoriteChangeClick = () => {
+    this.#changeData(UserAction.UPDATE_TRIP_EVENT, UpdateType.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
+  };
+
+  #onDeleteButtonClick = (tripEvent) => {
+    this.#changeData(UserAction.DELETE_TRIP_EVENT, UpdateType.MINOR, tripEvent);
   };
 }
