@@ -1,10 +1,13 @@
-import {getRandomTown} from '../mock/offer-point-town.js';
-import {DESTINATIONS} from '../mock/offer-point-town.js';
+import {getRandomTowns} from '../mock/offer-point-town.js';
 
 export default class TownModel {
-  #towns = Array.from({length: DESTINATIONS.length}, getRandomTown);
+  #towns = getRandomTowns();
 
-  getTowns() {
+  init() {
+    this.#towns = getRandomTowns();
+  }
+
+  get towns() {
     return this.#towns;
   }
 }

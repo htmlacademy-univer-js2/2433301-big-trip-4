@@ -1,3 +1,5 @@
+const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -39,4 +41,4 @@ const Mode = {
   EDITING: 'EDITING'
 };
 
-export {FilterType, SORTING_COLUMNS, Mode};
+export {FilterType, SORTING_COLUMNS, Mode, POINT_TYPES};
