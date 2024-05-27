@@ -1,4 +1,4 @@
-const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -21,15 +21,21 @@ const Mode = {
 };
 
 const UserAction = {
-  ADD_TRIP_EVENT: 'ADD_TRIP_EVENT',
-  UPDATE_TRIP_EVENT: 'UPDATE_TRIP_EVENT',
-  DELETE_TRIP_EVENT: 'DELETE_TRIP_EVENT',
+  ADD_POINT: 'ADD_POINT',
+  UPDATE_POINT: 'UPDATE_POINT',
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
-export {FilterType, Mode, POINT_TYPES, UpdateType, UserAction, SortType};
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+export {FilterType, Mode, POINT_TYPES, UpdateType, UserAction, SortType, Method};
